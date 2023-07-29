@@ -217,7 +217,6 @@ class AnswerService:
             print(f'Error : {err}')
             return JsonResponse({"msg": "Error"})
 
-    # todo: need to implement AJAX
     def delete_view(self):
         data = json.loads(json.dumps(self.request.POST))
         answer = Answers.get_all_answers(kwargs={'id': data.get('answer_id')})
