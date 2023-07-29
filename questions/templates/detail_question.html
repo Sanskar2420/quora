@@ -1,0 +1,307 @@
+{% extends 'base.html' %}
+{% block body %}
+    <div class="container-fluid" style="background: beige">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card m-4">
+                    <div class="card-header">
+                        <h1 id="question"
+                            data-value="{{ question_meta.question.id }}">{{ question_meta.question.question }}</h1>
+                        <div id="hidden-div" style="display: none">
+                            <input id="edit-question" value="{{ question_meta.question.question }}" type="text">
+                            <button onclick="cancelButton()">Cancel</button>
+                            <button onclick="submitQuestion({{ question_meta.question.id }})">Submit</button>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="m-2">
+                                    <b>Posted by</b> : <a
+                                        href="{% url 'display-profile' question_meta.question.user.id %}">{{ question_meta.question.user.username }}</a>
+                                    <br>
+                                    <b>Likes</b> : {{ question_meta.question_likes|length }}
+                                    <br>
+                                    <b>Dislikes</b> : {{ question_meta.question_dislikes|length }}
+                                    <br>
+                                    <b>Comments</b> : {{ comments|length }}
+                                    <br>
+                                    <b>Answers</b> : {{ answer_meta|length }}
+                                </div>
+                                <div class="m-2">
+                                    {% for tag in question_meta.tags %}
+                                        <b class="alert alert-warning m-2">{{ tag.tag.name }}</b>
+                                    {% endfor %}
+                                </div>
+                                <div class="m-2">
+                                    <button class="btn btn-danger m-2"
+                                            onclick="deleteQuestion({{ question_meta.question.id }})">
+                                        DELETE
+                                    </button>
+                                    <button class="btn btn-outline-success"
+                                            onclick="likeQuestion({{ question_meta.question.id }}, 1)">
+                                        Like
+                                    </button>
+                                    <button class="btn btn-outline-danger"
+                                            onclick="likeQuestion({{ question_meta.question.id }}, 0)">
+                                        Dislike
+                                    </button>
+                                    <button class="btn btn-outline-warning"
+                                            onclick="editQuestion({{ question_meta.question.id }}, 0)">
+                                        Edit
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-md-12 m-2">
+                                    <div class="card">
+                                        <div class="card-header">Comments</div>
+                                        <div class="card-body">
+                                            {% for comment in comments %}
+                                                <div class="card m-2">
+                                                    <div class="card-body">
+                                                        <blockquote class="blockquote mb-0">
+                                                            <p>{{ comment.description }}</p>
+                                                            <footer class="blockquote-footer"><a
+                                                                    href="{% url 'display-profile' comment.user.id %}">{{ comment.user.username }}</a>
+                                                                (Commented on : {{ comment.comment_date }})
+                                                            </footer>
+                                                        </blockquote>
+                                                        <button class="btn btn-danger m-2"
+                                                                onclick="deleteComment({{ comment.id }})">Delete
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                            <form>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">Comment</span>
+                                                    </div>
+                                                    <textarea id='comment-text' class="form-control"
+                                                              aria-label="With textarea"></textarea>
+                                                    <div class="m-2">
+                                                        <input type="button" onclick="submitComment()"
+                                                               value="Add Comment"
+                                                               class="btn btn-primary">
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 m-2">
+                                    <div class="card">
+                                        <div class="card-header">Answers</div>
+                                        <div class="card-body">
+                                            {% for ans_meta in answer_meta %}
+                                                <div class="card m-2">
+                                                    <div class="card-header">
+                                                        <b>Likes</b> : {{ ans_meta.answer_likes|length }}
+                                                        <br>
+                                                        <b>Dislikes</b> : {{ ans_meta.answer_dislike|length }}
+                                                        <br>
+                                                        <b>Published</b>: {{ ans_meta.answer.answer_date }}
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <blockquote class="blockquote mb-0">
+                                                            <p>{{ ans_meta.answer.answer }}</p>
+                                                            <footer class="blockquote-footer"><a
+                                                                    href="{% url 'display-profile' ans_meta.answer.user.id %}">{{ ans_meta.answer.user.username }}</a>
+                                                            </footer>
+                                                        </blockquote>
+                                                        <button class="btn btn-danger m-2"
+                                                                onclick="deleteAnswer({{ ans_meta.answer.id }})">Delete
+                                                        </button>
+                                                        <button class="btn btn-outline-primary ml-2"
+                                                                onclick="likeAnswer({{ ans_meta.answer.id }}, 1)">Like
+                                                        </button>
+                                                        <button class="btn btn-outline-danger"
+                                                                onclick="likeAnswer({{ ans_meta.answer.id }}, 0)">
+                                                            Dislike
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                            <form>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">Answer</span>
+                                                    </div>
+                                                    <textarea id='answer-text' class="form-control"
+                                                              aria-label="With textarea"></textarea>
+                                                    <input type="button" onclick="submitAnswer()" value="Submit Answer"
+                                                           class="btn btn-primary m-2">
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function deleteAnswer(answerId) {
+            let question_id = document.getElementById('question').getAttribute('data-value')
+            data = {'answer_id': answerId, 'question_id': question_id}
+            $.ajax({
+                type: "POST",
+                data: data,
+                url: "/ques/answerDelete/",
+                success: function (response) {
+                    if (response.msg === 'Success') {
+                        alert("Answer is deleted successfully")
+                        window.location.reload()
+                    } else {
+                        alert("You can't delete")
+                    }
+                }
+            })
+        }
+    </script>
+    <script>
+        function deleteComment(commentID) {
+            let question_id = document.getElementById('question').getAttribute('data-value')
+            data = {'comment_id': commentID, 'question_id': question_id}
+            $.ajax({
+                type: "POST",
+                data: data,
+                url: "/ques/commentDelete/",
+                success: function (response) {
+                    if (response.msg === 'Success') {
+                        window.location.reload()
+                    } else {
+                        alert("You can't delete")
+                    }
+                }
+            })
+        }
+    </script>
+    <script>
+        function submitComment() {
+            let comment_text = document.getElementById('comment-text').value
+            let question_id = document.getElementById('question').getAttribute('data-value')
+            data = {'description': comment_text, 'question_id': question_id}
+            $.ajax({
+                url: "/ques/comment/",
+                type: "POST",
+                data: JSON.stringify(data),
+                success: function (response) {
+                    if (response.msg === 'Success') {
+                        window.location.reload()
+                    }
+                }
+            })
+        }
+    </script>
+    <script>
+        function submitAnswer() {
+            let answer_text = document.getElementById('answer-text').value
+            let question_id = document.getElementById('question').getAttribute('data-value')
+            data = {'description': answer_text, 'question_id': question_id}
+            $.ajax({
+                type: "POST",
+                data: JSON.stringify(data),
+                url: "/ques/answer/",
+                success: function (response) {
+                    if (response.msg === 'Success') {
+                        window.location.reload()
+                    }
+                }
+            })
+        }
+    </script>
+    <script>
+        function deleteQuestion(questionId) {
+            data = {'question_id': questionId}
+            $.ajax({
+                type: "POST",
+                data: JSON.stringify(data),
+                url: `/ques/questionDelete/${questionId}`,
+                success: function (response) {
+                    if (response.msg === 'Success') {
+                        alert("You have deleted this successfully")
+                        window.location.pathname = '/ques/showQuestions/'
+                    } else {
+                        alert(response.msg)
+                    }
+                }
+            })
+        }
+    </script>
+    <script>
+        function likeQuestion(questionId, value) {
+            let data = {"id_of_question": questionId, "like": value}
+            $.ajax({
+                type: "POST",
+                data: data,
+                url: "/ques/questionLikeUnlike/",
+                success: function (response) {
+                    if (response.msg === "Success") {
+                        alert(response.display)
+                        window.location.reload()
+                    } else {
+                        alert(response)
+                    }
+                }
+            })
+        }
+    </script>
+    <script>
+        function likeAnswer(answerId, value) {
+            let data = {"id_of_answer": answerId, "like": value}
+            $.ajax({
+                type: "POST",
+                data: data,
+                url: "/ques/answerLikeUnlike/",
+                success: function (response) {
+                    if (response.msg === "Success") {
+                        console.log(response)
+                        alert(response.display)
+                        window.location.reload()
+                    } else {
+                        alert(response)
+                    }
+                }
+            })
+        }
+    </script>
+    <script>
+        function submitQuestion(questionId) {
+            console.log(questionId)
+            let description = document.getElementById('edit-question').value
+            let data = {'question_id': questionId, 'description': description}
+            $.ajax({
+                type: "POST",
+                data: data,
+                url: `/ques/question/${questionId}/`,
+                success: function (response) {
+                    if (response.msg === "Success") {
+                        console.log(response)
+                        alert(response.display)
+                        window.location.reload()
+                    } else {
+                        alert(response)
+                    }
+                }
+            })
+        }
+    </script>
+    <script>
+        function cancelButton() {
+            document.getElementById('hidden-div').style.display = 'none';
+        }
+    </script>
+    <script>
+        function editQuestion(questionId) {
+            document.getElementById('hidden-div').style.display = 'inline';
+        }
+    </script>
+{% endblock %}

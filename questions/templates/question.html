@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <form method="POST">
+                    <div class="form-group">
+                        <div class="card m-4">
+                            <div class="card-header"><b>Add Questions From Here : </b></div>
+                            <div class="card-body">
+                                <label for="exampleFormControlSelect2">Example multiple select</label>
+                                <select multiple class="form-control" id="exampleFormControlSelect2" name="tags">
+                                    <option value="Python">Python</option>
+                                    <option value="Django">Django</option>
+                                    <option value="Java">Java</option>
+                                    <option value="AWS">AWS</option>
+                                    <option value="React">React</option>
+                                </select>
+                                <div class="form-group">
+                                    <label for="exampleFormControlTextarea1">Example textarea</label>
+                                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"
+                                              name="question"></textarea>
+                                </div>
+                                <input type="submit" value="Submit" class="btn btn-primary">
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

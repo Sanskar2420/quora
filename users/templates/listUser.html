@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">Users</div>
+                    <div class="card-body">
+                        {% for user in users %}
+                            <div class="m-2">
+                                {{ user.username }}
+                                <button type="button" class="btn btn-primary"
+                                        onclick="followSubmitButton({{ user.id }})">Follow
+                                </button>
+                                <hr>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function followSubmitButton(userId) {
+            $.ajax({
+                type: "POST",
+                data: JSON.stringify({"user_id": userId}),
+                url: "/users/",
+                success: function (response) {
+                    if (response.msg === "Success") {
+                        alert("You have successfully Submitted request to follow")
+                        window.location.reload()
+                    } else {
+                        alert(response)
+                    }
+                }
+            })
+        }
+    </script>
+{% endblock %}
