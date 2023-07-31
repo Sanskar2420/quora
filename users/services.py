@@ -14,6 +14,7 @@ from users.constants import LOGIN_TEMPLATE, REGISTER_TEMPLATE, PROFILE_TEMPLATE,
     USERNAME_PATTERN, PASSWORD_PATTERN, EMAIL_PATTERN, INVALID_EMAIL_FORMAT, INVALID_PASSWORD_FORMAT, \
     INVALID_USERNAME_FORMAT, FIELDS_MISSING, SOMETHING_WENT_WRONG, ACCOUNT_DISABLED, INVALID_CREDENTIALS, \
     FOLLOWERS_TEMPLATE, LIST_OF_USER_TEMPLATE, FOLLOWING_TEMPLATE, DISPLAY_PROFILE_ONLY_TEMPLATE
+from users.tasks import print_func
 
 
 class HomeViewService:
@@ -147,6 +148,7 @@ class LoginService:
                     self.context['error'] = ACCOUNT_DISABLED
                     return render(self.request, template_name=self.template, context=self.context)
                 login(self.request, user)
+                print_func.delay(user=user.email)
                 next_page = self.request.GET.get('next')
                 if next_page:
                     return redirect(next_page)
