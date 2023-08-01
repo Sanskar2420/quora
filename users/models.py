@@ -4,7 +4,24 @@ from django.db import models
 status_choice = [('ACCEPTED', 'ACCEPTED'), ('PENDING', 'PENDING'), ('REJECTED', 'REJECTED')]
 
 
+class UserFollowManager(models.Manager):
+    def get_all_user_for_follow(self, filter_kwargs, exclude_filter):
+        results = self.filter(**filter_kwargs).exclude(**exclude_filter).prefetch_related('requested_by').all()
+        return [
+            {
+                "user": result,
+                "status": result.requested_to.filter(
+                    request_to__id=result.id,
+                    request_by__id=exclude_filter.get('id__exact'),
+                ).values('status').first(),
+            }
+            for result in results
+        ]
+
+
 class User(AbstractUser):
+    user_followers = UserFollowManager()
+
     @classmethod
     def create_user(cls, kwargs):
         return cls.objects.create(**kwargs)
@@ -23,7 +40,8 @@ class User(AbstractUser):
             filter_kwargs = {}
         if not exclude_filter:
             exclude_filter = {}
-        return cls.objects.filter(**filter_kwargs).exclude(**exclude_filter)
+        return cls.user_followers.get_all_user_for_follow(filter_kwargs=filter_kwargs, exclude_filter=exclude_filter)
+        # return cls.objects.filter(**filter_kwargs).exclude(**exclude_filter)
 
     @classmethod
     def set_new_password(cls, user, password):

@@ -7,11 +7,21 @@
                     <div class="card-header">Users</div>
                     <div class="card-body">
                         {% for user in users %}
+                            {{ user.user.username }}
                             <div class="m-2">
-                                {{ user.username }}
-                                <button type="button" class="btn btn-primary"
-                                        onclick="followSubmitButton({{ user.id }})">Follow
-                                </button>
+                                {% if user.status.status == 'ACCEPTED' %}
+                                    <span class="alert alert-success">ACCEPTED</span>
+                                    <button type="button" class="btn btn-outline-success" onclick="">Chat</button>
+                                {% elif user.status.status == 'PENDING' %}
+                                    <span class="alert alert-warning">PENDING</span>
+                                    <button type="button" class="btn btn-outline-danger"
+                                            onclick="cancelRequest({{ user.user.id }})">Cancel Request
+                                    </button>
+                                {% else %}
+                                    <button type="button" class="btn btn-primary"
+                                            onclick="followSubmitButton({{ user.user.id }})">Follow
+                                    </button>
+                                {% endif %}
                                 <hr>
                             </div>
                         {% endfor %}
@@ -27,8 +37,26 @@
                 data: JSON.stringify({"user_id": userId}),
                 url: "/users/",
                 success: function (response) {
+                    console.log(response)
                     if (response.msg === "Success") {
                         alert("You have successfully Submitted request to follow")
+                        window.location.reload()
+                    } else {
+                        alert(response)
+                    }
+                }
+            })
+        }
+
+        function cancelRequest(userId) {
+            let data = {"user_id": userId}
+            $.ajax({
+                type: "POST",
+                data: data,
+                url: "/following/",
+                success: function (response) {
+                    if (response.msg === "Success") {
+                        alert("You have cancelled Request to follow to user.")
                         window.location.reload()
                     } else {
                         alert(response)

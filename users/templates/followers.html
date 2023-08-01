@@ -59,7 +59,6 @@
     </div>
     <script>
         function followAction(value, userId, requestUser) {
-            console.log('here')
             let data = {"value": value, "user_id": userId, "request_user": requestUser}
             $.ajax({
                 "type": "POST",

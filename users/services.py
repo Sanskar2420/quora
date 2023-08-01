@@ -225,6 +225,8 @@ class FollowingService:
 
     def get_view(self):
         try:
+            self.context['pending_users'] = FollowTable.get_users(
+                filter_kwargs={"request_by": self.request.user.id, "status": "PENDING"})
             self.context['accepted_users'] = FollowTable.get_users(
                 filter_kwargs={"request_by": self.request.user.id, "status": "ACCEPTED"})
             return render(self.request, template_name=self.template_name, context=self.context)
