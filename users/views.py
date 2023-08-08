@@ -1,10 +1,11 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import redirect
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 from users.services import RegisterUserService, LoginService, UpdateProfileService, FollowersService, \
-    ListOfUsersService, FollowingService, DisplayAnotherUserProfileService, HomeViewService
+    ListOfUsersService, FollowingService, DisplayAnotherUserProfileService, HomeViewService, CreateRoomService
 
 
 class HomeView(View):
@@ -12,6 +13,7 @@ class HomeView(View):
         return HomeViewService(request=request).get_view()
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class RegisterUser(View):
     def get(self, request, *args, **kwargs):
         return RegisterUserService(request=request).get_view()
@@ -20,6 +22,7 @@ class RegisterUser(View):
         return RegisterUserService(request=request).post_view()
 
 
+@method_decorator(csrf_exempt, name='dispatch')
 class Login(View):
     def get(self, request, *args, **kwargs):
         return LoginService(request=request).get_view()
@@ -29,7 +32,7 @@ class Login(View):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class UpdateProfile(View):
+class UpdateProfile(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         return UpdateProfileService(request=request).get_view()
 
@@ -38,7 +41,7 @@ class UpdateProfile(View):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class Followers(View):
+class Followers(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         return FollowersService(request=request).get_view()
 
@@ -47,7 +50,7 @@ class Followers(View):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class ListOfUsers(View):
+class ListOfUsers(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         return ListOfUsersService(request=request).get_view()
 
@@ -67,3 +70,9 @@ class Following(LoginRequiredMixin, View):
 class DisplayAnotherUserProfile(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         return DisplayAnotherUserProfileService(request=request, id=kwargs.get("id")).get_view()
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class CreateChatRoom(LoginRequiredMixin, View):
+    def post(self, request, *args, **kwargs):
+        return CreateRoomService(request=request).post_view()

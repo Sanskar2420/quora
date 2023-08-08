@@ -4,7 +4,9 @@ import re
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.hashers import make_password
 from django.http import JsonResponse
+from django.utils.crypto import get_random_string
 
+from chats.models import Room
 from questions.models import Questions, Answers
 from users.models import User, FollowTable
 from django.contrib import messages
@@ -289,3 +291,31 @@ class DisplayAnotherUserProfileService:
         self.context['questions'] = Questions.get_all_questions(kwargs={"user": self.request.user})
         self.context['answers'] = Answers.get_all_answers(kwargs={"user": self.request.user})
         return render(self.request, template_name=self.template_name, context=self.context)
+
+
+class CreateRoomService:
+    def __init__(self, request):
+        self.request = request
+
+    def post_view(self):
+        sender = self.request.user.id
+        receiver = self.request.POST.get('receiver')
+        self.request.session['receiver_user'] = receiver
+
+        room = Room.get_room_by_sender_receiver(kwargs={'sender': User.get_user(filter_kwargs={"id": sender}),
+                                                        'receiver': User.get_user(filter_kwargs={"id": receiver})})
+        if room:
+            room_name = room[0].name
+        else:
+            new_room = get_random_string(10)
+            while True:
+                room_exists = Room.get_room(kwargs={"name": new_room})
+                if room_exists:
+                    new_room = get_random_string(10)
+                else:
+                    break
+            new_created_room = Room.create_room(kwargs={'sender': User.get_user(filter_kwargs={"id": sender}),
+                                                        "receiver": User.get_user(filter_kwargs={"id": receiver}),
+                                                        'name': new_room})
+            room_name = new_created_room.name
+        return redirect('room', room_name=room_name)

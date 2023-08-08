@@ -2,7 +2,7 @@ from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, 
     PasswordResetCompleteView
 from django.urls import path
 from users.views import RegisterUser, Login, UpdateProfile, Followers, ListOfUsers, Following, \
-    DisplayAnotherUserProfile, HomeView
+    DisplayAnotherUserProfile, HomeView, CreateChatRoom
 from django.contrib.auth import views as auth_view
 
 urlpatterns = [
@@ -31,4 +31,6 @@ urlpatterns = [
     path('password-reset-complete/',
          PasswordResetCompleteView.as_view(template_name='password_reset_complete.html'),
          name='password_reset_complete'),
+
+    path('chatCreation/', CreateChatRoom.as_view(), name='chat-creation')
 ]

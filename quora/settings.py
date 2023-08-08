@@ -27,11 +27,12 @@ SECRET_KEY = os.getenv('SECURITY_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'users',
     'questions',
+    'channels',
+    'chats',
 ]
 
 MIDDLEWARE = [
@@ -137,3 +140,15 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASS')
 # celery configurations
 CELERY_BROKER_URL = "redis://localhost:6379"
 CELERY_RESULT_BACKEND = "redis://localhost:6379"
+
+# ASGI Server changes for the chat application
+ASGI_APPLICATION = "quora.asgi.application"
+# channels layer application
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}

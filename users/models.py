@@ -1,10 +1,10 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.db import models
 
 status_choice = [('ACCEPTED', 'ACCEPTED'), ('PENDING', 'PENDING'), ('REJECTED', 'REJECTED')]
 
 
-class UserFollowManager(models.Manager):
+class UserFollowManager(UserManager):
     def get_all_user_for_follow(self, filter_kwargs, exclude_filter):
         results = self.filter(**filter_kwargs).exclude(**exclude_filter).prefetch_related('requested_by').all()
         return [

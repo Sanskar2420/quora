@@ -10,8 +10,18 @@
                             {{ user.user.username }}
                             <div class="m-2">
                                 {% if user.status.status == 'ACCEPTED' %}
-                                    <span class="alert alert-success">ACCEPTED</span>
-                                    <button type="button" class="btn btn-outline-success" onclick="">Chat</button>
+                                    <div>
+                                        <div class="m-3">
+                                            <span class="alert alert-success">ACCEPTED</span>
+                                        </div>
+                                        <div class="m-3">
+                                            <form method="post" action="/chatCreation/">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="receiver" value="{{ user.user.id }}">
+                                                <input type="submit" class="btn btn-outline-success" value="Chat">
+                                            </form>
+                                        </div>
+                                    </div>
                                 {% elif user.status.status == 'PENDING' %}
                                     <span class="alert alert-warning">PENDING</span>
                                     <button type="button" class="btn btn-outline-danger"
